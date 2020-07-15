@@ -8,7 +8,7 @@ volumes:
 services:
   nginx:
     image: nginx:alpine
-    container_name: nz02
+    container_name: nz03
     ports:
       - "8000:8000"
     volumes:
@@ -22,7 +22,7 @@ services:
     build:
       context: .
       dockerfile: compose/django/Dockerfile
-    container_name: dz02
+    container_name: dz03
     depends_on:
       - db
     volumes:
@@ -40,7 +40,7 @@ services:
     build:
       context: .
       dockerfile: compose/postgres/Dockerfile
-    container_name: pz02
+    container_name: pz03
     env_file:
       - ./.envs/.postgres
     volumes:
@@ -52,14 +52,14 @@ services:
       - djangonetwork
   redis:
     image: redis:alpine
-    container_name: rz02
+    container_name: rz03
     ports:
       - "6379:6379"
     networks:
       - djangonetwork
   pgadmin:
     image: dpage/pgadmin4
-    container_name: demo-pgadmin2 #you can change this
+    container_name: demo-pgadmin3 #you can change this
     depends_on:
       - db
     ports:

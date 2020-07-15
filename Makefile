@@ -9,6 +9,9 @@ test:
   -e DJANGO_SETTINGS_MODULE=settings \
   --no-deps --rm web py.test -s
 
+startapp:
+	docker-compose run --no-deps --rm web python manage.py startapp matcher
+
 up-non-daemon:
 	docker-compose up
 
