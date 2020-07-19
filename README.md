@@ -7,6 +7,7 @@ Description: Matches medical records with missing information using various algo
 - make more modular
 - make more extensible
 - make more general
+- add test that the hackathon used
 
 ### Future Features/Fixes
 - ask user if file was initially typed or transferred from

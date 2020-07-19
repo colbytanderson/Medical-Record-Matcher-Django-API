@@ -1,7 +1,7 @@
 import csv
 
-import utility
-import dictionaries
+from . import utility
+from . import dictionaries
 
 def calculatePatientAcctNumConfidence(patientAcctNum1, patientAcctNum2):
     if patientAcctNum1 == "" or patientAcctNum2 == "":

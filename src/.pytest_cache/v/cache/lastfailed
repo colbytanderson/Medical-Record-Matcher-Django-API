@@ -1,0 +1,3 @@
+{
+  "apps/matcher/tests.py::RoomViewSetTest::testDetailViewBasicFunctionality": true
+}

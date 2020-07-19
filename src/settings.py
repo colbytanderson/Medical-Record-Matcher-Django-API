@@ -1,4 +1,4 @@
-from apps.messenger.main.settings import *
+from apps.core.main.settings import *
 
 
 DATABASES = {

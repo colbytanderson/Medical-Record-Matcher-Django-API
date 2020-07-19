@@ -10,5 +10,5 @@ matcherPath = 'matcher/'
 urlpatterns = [
     path(adminPath, admin.site.urls),
     path(authPath, include('apps.myauth.api.urls')),
-    path(matcherPath, include('apps.matcher.api.urls')
+    path(matcherPath, include('apps.matcher.api.urls'))
 ]

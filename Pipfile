@@ -22,6 +22,8 @@ celery = "*"
 gunicorn = "*"
 pytest = "*"
 pytest-django = "*"
+fuzzy = "*"
+python-levenshtein = "*"
 
 [requires]
 python_version = "3.8"
