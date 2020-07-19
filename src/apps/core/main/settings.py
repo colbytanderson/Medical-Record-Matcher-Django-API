@@ -50,7 +50,8 @@ INSTALLED_APPS = [
     'django_nose',
     'celery',
 
-    'apps.myauth'
+    'apps.myauth',
+    'apps.matcher'
 ]
 
 MIDDLEWARE = [
