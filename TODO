@@ -1,0 +1,10 @@
+Functionality
+1 create model in database for csv associated with each user
+2 have them select column names and data types for columns
+3 have them select confidence levels
+    have default confidence levels based on data types
+4 have them select add on algorithms
+    have default algorithms based on data types
+5 have them be able to share csv files with other users
+6 have users be able to edit csv files real time
+7 add ability to have more file formats

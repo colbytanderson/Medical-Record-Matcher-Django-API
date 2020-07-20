@@ -26,6 +26,8 @@ def calculateFullNameConfidence(first1, last1, first2, last2):
         return total
 
 def calculateNameConfidence(name1, name2):
+    if (name1 == '' or name2 == ''):
+        return None
     total = 0
 
     if utility.compareByAbbrevWord(name1, name2):
@@ -170,77 +172,72 @@ def calculateZipConfidence(zip1, zip2):
         confidence = 1/(pow(distance+1, distance))
         return confidence
 
+def switch_func(value, x, y):
+    return {
+        'accountnumber': calculatePatientAcctNumConfidence,
+        'firstname': calculateNameConfidence,
+        'middlename': calculateMiddleIConfidence,
+        'lastname': calculateNameConfidence,
+        'dob': calculateDOBConfidence,
+        'sex': calculateSexConfidence,
+        'street': calculateStreetConfidence,
+        'city': calculateCityConfidence,
+        'state': calculateStateConfidence,
+        'zip': calculateZipConfidence
+    }.get(value)(x, y)
 
-def getConfidenceScore(row1, row2):
+# columns is queryset
+def getConfidenceScore(row1, row2, columns, fullNameConfidenceScore):
     row1 = [x.lower() for x in row1]
     row2 = [x.lower() for x in row2]
     row1 = [x.strip() for x in row1]
     row2 = [x.strip() for x in row2]
 
-    PAN_WEIGHT = 0.01
-    CN_WEIGHT = 0.1
-    CMI_WEIGHT = 0.01
-    DOB_WEIGHT = 0.06
-    S_WEIGHT = 0.04
-    CS1_WEIGHT = 0.2
-    CS2_WEIGHT = 0.01
-    CC_WEIGHT = 0.07
-    CS_WEIGHT = 0.07
-    CZ_WEIGHT = 0.03
-    PN_WEIGHT = 0.05
-    PMI_WEIGHT = 0.01
-    PS1_WEIGHT = 0.16
-    PS2_WEIGHT = 0.01
-    PC_WEIGHT = 0.07
-    PS_WEIGHT = 0.07
-    PZ_WEIGHT = 0.03
-
-
-    #use dictionary in case their columns are messed up
-    PAN = calculatePatientAcctNumConfidence(row1[2], row2[2])
-    CN = calculateFullNameConfidence(row1[3], row1[5], row2[3], row2[5])
-    CMI = calculateMiddleIConfidence(row1[4], row2[4])
-    DOB = calculateDOBConfidence(row1[6], row2[6])
-    S = calculateSexConfidence(row1[7], row2[7]) 
-    CS1 = calculateStreetConfidence(row1[8], row2[8]) 
-    CS2 = calculateStreetConfidence(row1[9], row2[9])
-    CC = calculateCityConfidence(row1[10], row2[10])
-    CS = calculateStateConfidence(row1[11], row2[11])
-    CZ = calculateZipConfidence(row1[12], row2[12])
-
-    PN = calculateFullNameConfidence(row1[13], row1[15], row2[13], row2[15])
-    PMI = calculateMiddleIConfidence(row1[14], row2[14])
-    PS1 = calculateStreetConfidence(row1[16], row2[16])
-    PS2 = calculateStreetConfidence(row1[17], row2[17])
-    PC = calculateCityConfidence(row1[18], row2[18])
-    PS = calculateStateConfidence(row1[19], row2[19])
-    PZ = calculateZipConfidence(row1[20], row2[20])
-
-    confidenceScores = [PAN,CN,CMI,DOB,S,CS1,CS2,CC,CS,CZ,PN,PMI,PS1,PS2,PC,PS,PZ]
-    weights = [PAN_WEIGHT,CN_WEIGHT,CMI_WEIGHT,DOB_WEIGHT,S_WEIGHT,CS1_WEIGHT,CS2_WEIGHT,CC_WEIGHT,CS_WEIGHT,CZ_WEIGHT,
-                PN_WEIGHT,PMI_WEIGHT,PS1_WEIGHT,PS2_WEIGHT,PC_WEIGHT,PS_WEIGHT,PZ_WEIGHT]
-
+    newConfidenceScores = []
+    vals = []
     newFactor = 0
-    for score,weight in zip(confidenceScores, weights):
-        if score is not None:
-            newFactor += weight
-
+    firstInd = None
+    lastInd = None
+    fullname = False
+    for ind, col in enumerate(columns):
+        if (col.dataType == 'firstname'):
+            first = ind
+        if (col.dataType == 'lastname'):
+            last = ind
+    if first is not None and last is not None:
+        fullname = True
+        
+    for ind, col in enumerate(columns):
+        if col.skip == 'no':
+            if not fullname:
+                val = switch_func(col.dataType, row1[ind], row2[ind])
+                vals.append(val)
+            elif ind is not first and ind is not last:
+                val = switch_func(col.dataType, row1[ind], row2[ind])
+                vals.append(val)
+        if val is not None:
+            newFactor += col.confidenceScore
+    if fullname:
+        val = calculateFullNameConfidence(row1[first], row1[last], row2[first], row2[last])
+        if val is not None:
+            newFactor += val
     if newFactor == 0:
         newFactor = 1
 
     newConfidenceScores = []
-    for score,weight in zip(confidenceScores, weights):
-        if score is None:
+    for val, col in zip(vals, columns):
+        if val is None:
             newConfidenceScores.append(0)
         else:
-            newConfidenceScores.append(score * weight/newFactor)
+            newConfidenceScores.append(val * col.confidenceScore/newFactor)
     
     score = 0
     for s in newConfidenceScores:
         score += s
     return score
 
-def groupByConfidenceScore(data, confidenceThreshold):
+#columns is queryset
+def groupByConfidenceScore(data, columns, confidenceThreshold, fullNameConfidenceScore):
     alreadyAddedList = []
     result = []
     for row1 in data:
@@ -250,7 +247,7 @@ def groupByConfidenceScore(data, confidenceThreshold):
         alreadyAddedList.append(row1)
         for row2 in data:
             if row2 not in alreadyAddedList:
-                if getConfidenceScore(row1, row2) >= confidenceThreshold:
+                if getConfidenceScore(row1, row2, columns, fullNameConfidenceScore) >= confidenceThreshold:
                     group.append(row2)
                     alreadyAddedList.append(row2)
         result.append(group)

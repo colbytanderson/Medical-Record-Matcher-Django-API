@@ -9,8 +9,11 @@ test:
   -e DJANGO_SETTINGS_MODULE=settings \
   --no-deps --rm web py.test apps -s
 
-startapp:
-	docker-compose run --no-deps --rm web python manage.py startapp matcher
+makemigrations:
+	docker-compose run --no-deps  web python manage.py makemigrations
+
+migrate:
+	docker-compose run --no-deps  web python manage.py migrate
 
 up-non-daemon:
 	docker-compose up

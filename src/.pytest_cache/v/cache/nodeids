@@ -1,3 +1,5 @@
 [
-  "apps/matcher/tests.py::MatcherBasicTest::testDetailViewBasicFunctionality"
+  "apps/matcher/tests.py::RecordViewSetTest::testAddColumnBasic",
+  "apps/matcher/tests.py::RecordViewSetTest::testCreateBasic",
+  "apps/matcher/tests.py::RecordViewSetTest::testMatchRowsBasicFunctionality"
 ]

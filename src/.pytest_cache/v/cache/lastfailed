@@ -1,3 +1,4 @@
 {
+  "apps/matcher/tests.py::MatcherBasicTest::testDetailViewBasicFunctionality": true,
   "apps/matcher/tests.py::RoomViewSetTest::testDetailViewBasicFunctionality": true
 }

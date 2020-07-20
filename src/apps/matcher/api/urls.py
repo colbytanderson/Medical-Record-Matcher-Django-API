@@ -1,8 +1,8 @@
-from django.contrib import admin
-from django.urls import path, include, register_converter
-from .views import MatchMedicalRecordsView
+from rest_framework import routers
 
-# urlpatterns (url paths mapped to views or other urlpatterns)
-urlpatterns = [
-    path('', MatchMedicalRecordsView.as_view())
-]
+# import views that will be mapped to url paths
+from .views import RecordModelViewSet
+
+router = routers.SimpleRouter()
+router.register(r'', RecordModelViewSet)
+urlpatterns = router.urls
